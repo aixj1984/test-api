@@ -33,7 +33,7 @@ func ListTestQuestion(c *gin.Context) {
 		return
 	}
 
-	var questions []*models.Question
+	var questions []*models.CQuestion
 
 	_, err := providers.TestQuestion.GetMore(&questions, "", "1", models.CourseMap[courseid], testid, (start-1)*length, length)
 

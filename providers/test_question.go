@@ -98,9 +98,11 @@ func (p *TestQuestionProvider) GetMore(array interface{}, query_key, status stri
 			"options",
 			"answer",
 			"note",
-			"IFNULL(test_question.question_id, 0) as status").
+			"IFNULL(test_question.question_id, 0) as status",
+			"IFNULL(temp_a.collect_question_id, 0) as is_collect").
 			From(question_tablename).
 			InnerJoin("(select * from course_test_question where test_id = ? ) as test_question").On(question_tablename + ".id = test_question.question_id").
+			LeftJoin("(select distinct(question_id) as collect_question_id from collect_question_1 ) as temp_a").On(question_tablename + ".id = temp_a.collect_question_id").
 			Where(condition).
 			Limit(length).Offset(start)
 	}

@@ -48,6 +48,11 @@ type Question struct {
 	Status       int8   `xorm:"int  'status'"`
 }
 
+type CQuestion struct {
+	Question  `xorm:"extends"`
+	IsCollect int `xorm:"int  'is_collect'"`
+}
+
 type Question1 struct {
 	Question `xorm:"extends"`
 }
