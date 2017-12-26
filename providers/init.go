@@ -9,6 +9,10 @@ var (
 	TestQuestion ITestQuestionProvider
 
 	CustomerCourse ICustomerCourseProvider
+
+	TestResult ITestResultProvider
+
+	CollectQuestion ICollectQuestionProvider
 )
 
 //Init 初始化服务
@@ -22,6 +26,10 @@ func init() {
 	TestQuestion = &TestQuestionProvider{}
 
 	CustomerCourse = &CustomerCourseProvider{}
+
+	TestResult = &TestResultProvider{}
+
+	CollectQuestion = &CollectQuestionProvider{}
 
 	println("初始化providers")
 }

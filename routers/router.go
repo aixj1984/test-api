@@ -48,6 +48,13 @@ func init() {
 
 		api.GET("/test/question/list", test.ListTestQuestion)
 
+		api.GET("/collect/question/list", test.ListCollectQuestion)
+		api.POST("/collect/question/del", test.DelCollectQuestion)
+		api.POST("/collect/question/add", test.SaveCollectQuestion)
+
+		api.PUT("/testresult/add", test.SaveTestResult)
+		api.GET("/testresult/list", test.ListTestResult)
+
 	}
 
 	router.Static("/static", "./static")

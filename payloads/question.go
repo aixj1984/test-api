@@ -20,3 +20,8 @@ type InsertQuestion struct {
 	Options  string `validate:"required"`
 	Answer   string `validate:"required"`
 }
+
+type SaveQuestionCollect struct {
+	CourseId   int `validate:"required"`
+	QuestionId int `validate:"required"`
+}

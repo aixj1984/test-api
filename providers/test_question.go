@@ -127,7 +127,7 @@ func (p *TestQuestionProvider) Count(query_key, status string, question_tablenam
 
 	if len(query_key) > 0 {
 		if _, err := strconv.ParseInt(query_key, 10, 64); err == nil {
-			condition += " and question_lunjijichu.id = " + query_key
+			condition += " and " + question_tablename + ".id = " + query_key
 		} else {
 			condition += " and  title like '%" + query_key + "%' "
 		}

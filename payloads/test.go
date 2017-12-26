@@ -27,3 +27,11 @@ type SaveTestQuestionStatus struct {
 	QuestionId int `validate:"required"`
 	Status     int
 }
+
+type SaveTestResult struct {
+	CourseId    int `validate:"required"`
+	TestId      int `validate:"required"`
+	QuestionNum int `validate:"required"`
+	TestSec     int `validate:"required"`
+	RightNum    int
+}
