@@ -15,3 +15,9 @@ type CustomerCourseDetail struct {
 func (m *CustomerCourse) TableName() string {
 	return "customer_course"
 }
+
+func (u *CustomerCourse) TableUnique() [][]string {
+	return [][]string{
+		[]string{"CustomerId", "CourseId"},
+	}
+}

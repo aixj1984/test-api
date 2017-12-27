@@ -8,6 +8,8 @@ import (
 
 	"test-api/controllers/course"
 
+	"test-api/controllers/article"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -43,6 +45,7 @@ func init() {
 		api.GET("/course/list", course.ListCourse)
 		api.GET("/courses/list", course.ListAllCourse)
 		api.PUT("/course/setting", course.CustomerDefaultCourse)
+		api.PUT("/course/purchase", course.CustomerPurchaseCourses)
 
 		api.GET("/coursetest/list", test.ListCourseTest)
 
@@ -54,6 +57,10 @@ func init() {
 
 		api.PUT("/testresult/add", test.SaveTestResult)
 		api.GET("/testresult/list", test.ListTestResult)
+
+		api.GET("/article/list", article.ListArticle)
+
+		api.GET("article/detail", article.GetArticleDetail)
 
 	}
 

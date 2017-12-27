@@ -25,7 +25,7 @@ func init() {
 		new(CollectQuestion4), new(CollectQuestion5), new(CollectQuestion6),
 		new(CollectQuestion7), new(CollectQuestion8), new(CollectQuestion9),
 		new(CollectQuestion10), new(CollectQuestion11),
-		new(CourseTest), new(TestQuestion),
+		new(CourseTest), new(TestQuestion), new(Article),
 		new(Course), new(CustomerCourse), new(TestResult))
 
 	orm.SetMaxIdleConns("default", 5)

@@ -12,6 +12,8 @@ var (
 
 	TestResult ITestResultProvider
 
+	Article IArticleProvider
+
 	CollectQuestion ICollectQuestionProvider
 )
 
@@ -28,6 +30,8 @@ func init() {
 	CustomerCourse = &CustomerCourseProvider{}
 
 	TestResult = &TestResultProvider{}
+
+	Article = &ArticleProvider{}
 
 	CollectQuestion = &CollectQuestionProvider{}
 

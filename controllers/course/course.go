@@ -7,6 +7,7 @@ import (
 
 	"log"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 
@@ -127,6 +128,67 @@ func CustomerDefaultCourse(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"code": 101,
 		"msg":  "参数异常",
+	})
+
+}
+
+func CustomerPurchaseCourses(c *gin.Context) {
+
+	var payload payloads.PurchaseCourses
+	if c.ShouldBind(&payload) == nil {
+		course_array := strings.Split(payload.PurchaseCourses, ",")
+		var course_id_array []int
+		for i := 0; i < len(course_array); i++ {
+			course_id_s := strings.TrimSpace(course_array[i])
+			course_id, err := strconv.Atoi(course_id_s)
+			if err != nil {
+				c.JSON(200, gin.H{
+					"code": 101,
+					"msg":  err.Error(),
+				})
+				return
+			}
+			if course_id <= 0 || course_id > 11 {
+				c.JSON(200, gin.H{
+					"code": 101,
+					"msg":  "参数错误1",
+				})
+				return
+			}
+			course_id_array = append(course_id_array, course_id)
+		}
+		if len(course_id_array) == 0 {
+			c.JSON(200, gin.H{
+				"code": 101,
+				"msg":  "参数错误2",
+			})
+			return
+		}
+
+		total_mount := len(course_id_array) * 120 * (100 - (len(course_id_array)-1)*5) / 100
+
+		log.Println(total_mount)
+
+		for i := 0; i < len(course_id_array); i++ {
+			var customer_course = models.CustomerCourse{}
+			customer_course.CustomerId = 1
+			customer_course.CourseId = course_id_array[i]
+			customer_course.IsDisplay = 1
+
+			providers.CustomerCourse.InsertOne(&customer_course)
+
+		}
+		c.JSON(200, gin.H{
+			"code": 0,
+			"msg":  "",
+		})
+
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"code": 101,
+		"msg":  "参数异常3",
 	})
 
 }
