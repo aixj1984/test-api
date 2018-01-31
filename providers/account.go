@@ -3,6 +3,8 @@ package providers
 import (
 	"test-api/models"
 
+	"fmt"
+
 	"github.com/astaxie/beego/orm"
 
 	//"errors"
@@ -10,7 +12,8 @@ import (
 
 //IAccountProvider account provider interface
 type IAccountProvider interface {
-	GetOne(*models.Account) error
+	GetOne(interface{}) error
+	InsertOne(interface{}) (int64, error)
 }
 
 //AccountProvider account provider
@@ -18,7 +21,7 @@ type AccountProvider struct {
 }
 
 //Get 获取account
-func (p *AccountProvider) GetOne(m *models.Account) error {
+func (p *AccountProvider) GetOne(m interface{}) error {
 	o := orm.NewOrm()
 	/*
 		err := o.QueryTable("account").Filter("id", 1).One(m)
@@ -33,4 +36,24 @@ func (p *AccountProvider) GetOne(m *models.Account) error {
 	err := o.Read(m)
 
 	return err
+}
+
+func (p *AccountProvider) InsertOne(m interface{}) (int64, error) {
+	o := orm.NewOrm()
+
+	effact, err := o.Insert(m)
+
+	return effact, err
+}
+
+func (p *AccountProvider) UpdateOne(m *models.Account) (int64, error) {
+	o := orm.NewOrm()
+
+	res, err := o.Raw("update  account set title = ?, content = ? ,source = ? ,abstract = ? where id = ? ").Exec()
+	if err == nil {
+		num, _ := res.RowsAffected()
+		fmt.Println("mysql row affected nums: ", num)
+		return num, nil
+	}
+	return 0, err
 }
