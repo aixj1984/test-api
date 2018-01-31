@@ -2,8 +2,10 @@ package wechat
 
 import (
 	"net/http"
+	"strconv"
 
 	"test-api/comm/beelog"
+	//	"test-api/comm/myredis"
 	"test-api/comm/wechat"
 	"test-api/models"
 	"test-api/providers"
@@ -24,12 +26,13 @@ func Login(c *gin.Context) {
 }
 
 func CallBack(c *gin.Context) {
+
 	var wx_userinfo = models.WxUserinfo{}
 
 	service := wechat.GetwxService()
 	code := c.Query("code")
 	state := c.Query("state")
-
+	//	cache_service := myredis.GetCache()
 	userinfo := service.GetUserInfo(code, state)
 	beelog.Debug(userinfo)
 	if userinfo != nil {
@@ -51,13 +54,27 @@ func CallBack(c *gin.Context) {
 				account.CountryCode = userinfo.(*oauth2.UserInfo).Country
 				account.AccountSrc = 1
 				account.Password = string(rand.NewHex())
-				if _, err1 := providers.Account.InsertOne(account); err1 != nil {
+				if id, err1 := providers.Account.InsertOne(account); err1 != nil {
 					beelog.Error(err1)
 					c.JSON(200, gin.H{
 						"code": 1000,
 						"msg":  err1.Error(),
 					})
 					return
+				} else {
+					uid := strconv.FormatInt(id, 10)
+					cookie := &http.Cookie{
+						Name:  "UID",
+						Value: uid,
+					}
+					http.SetCookie(c.Writer, cookie)
+					//					if err, token := cache_service.SetToken(uid, 180); err == nil {
+					//						cookie1 := &http.Cookie{
+					//							Name:  "token",
+					//							Value: token,
+					//						}
+					//						http.SetCookie(c.Writer, cookie1)
+					//					}
 				}
 			}
 
