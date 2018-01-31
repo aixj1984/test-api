@@ -2,7 +2,9 @@ package routers
 
 import (
 	"log"
+	"strings"
 
+	"test-api/comm/beelog"
 	"test-api/controllers"
 	"test-api/controllers/article"
 	"test-api/controllers/course"
@@ -28,6 +30,21 @@ func CORSMiddleware() gin.HandlerFunc {
 		} else {
 			c.Next()
 		}
+
+	}
+}
+
+func Check() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		if strings.Contains(c.Request.RequestURI, "api") && c.Request.RequestURI != "/api/wechat/login" && c.Request.RequestURI != "/api/wechat/login" {
+			beelog.Debug("test")
+			if uid, err := c.Cookie("UID"); err != nil {
+				c.AbortWithStatus(401)
+			} else {
+				log.Println(uid)
+			}
+		}
+
 	}
 }
 
@@ -35,6 +52,7 @@ func init() {
 	router := gin.Default()
 
 	router.Use(CORSMiddleware())
+	router.Use(Check())
 
 	// Simple group: api
 	api := router.Group("/api")
