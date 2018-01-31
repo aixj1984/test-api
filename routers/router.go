@@ -2,13 +2,12 @@ package routers
 
 import (
 	"log"
+
 	"test-api/controllers"
-
-	"test-api/controllers/test"
-
-	"test-api/controllers/course"
-
 	"test-api/controllers/article"
+	"test-api/controllers/course"
+	"test-api/controllers/test"
+	"test-api/controllers/wechat"
 
 	"github.com/gin-gonic/gin"
 )
@@ -62,6 +61,9 @@ func init() {
 
 		api.GET("article/detail", article.GetArticleDetail)
 
+		api.GET("/wechat/login", wechat.Login)
+		api.GET("/wechat/callback", wechat.CallBack)
+
 	}
 
 	router.Static("/static", "./static")
@@ -69,6 +71,6 @@ func init() {
 
 	router.StaticFile("/", "./views/index.html")
 
-	router.Run(":80")
+	router.Run(":8000")
 
 }

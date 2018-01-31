@@ -3,7 +3,7 @@ package payloads
 import (
 	"encoding/json"
 	"flag"
-	"test-admin/comm/utils"
+	"test-api/comm/utils"
 
 	validator "gopkg.in/go-playground/validator.v9"
 )

@@ -3,6 +3,7 @@ package providers
 var (
 	//Account Account Provider
 	Account  IAccountProvider
+	Wx       IWxProvider
 	Question IQuestionProvider
 	Test     ITestProvider
 
@@ -34,6 +35,8 @@ func init() {
 	Article = &ArticleProvider{}
 
 	CollectQuestion = &CollectQuestionProvider{}
+
+	Wx = &WxProvider{}
 
 	println("初始化providers")
 }

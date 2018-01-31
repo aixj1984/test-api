@@ -1,9 +1,9 @@
 package models
 
 import (
-	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/orm"
+	"test-api/comm/beelog"
 
+	"github.com/astaxie/beego/orm"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -14,9 +14,9 @@ func init() {
 
 	orm.Debug = true
 
-	orm.RegisterDataBase("default", "mysql", "dev_richard:dev_richard@tcp(10.0.12.239:3310)/test?charset=utf8")
+	orm.RegisterDataBase("default", "mysql", "root:rootroot@tcp(111.230.221.146:3310)/neihe_test?charset=utf8")
 
-	orm.RegisterModel(new(Account),
+	orm.RegisterModel(new(Account), new(WxUserinfo),
 		new(Question1), new(Question2), new(Question3),
 		new(Question4), new(Question5), new(Question6),
 		new(Question7), new(Question8), new(Question9),
@@ -35,6 +35,6 @@ func init() {
 	//create table
 	orm.RunSyncdb("default", false, true)
 
-	beego.Info("init db info  ..... ")
+	beelog.Info("init db info  ..... ")
 
 }
