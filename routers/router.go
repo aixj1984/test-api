@@ -36,9 +36,10 @@ func CORSMiddleware() gin.HandlerFunc {
 
 func Check() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if strings.Contains(c.Request.RequestURI, "api") && c.Request.RequestURI != "/api/wechat/login" && c.Request.RequestURI != "/api/wechat/login" {
-			beelog.Debug("test")
-			if uid, err := c.Cookie("UID"); err != nil {
+		if strings.Contains(c.Request.RequestURI, "api") && c.Request.RequestURI != "/api/wechat/login" && c.Request.RequestURI != "/api/wechat/callback" {
+			//			beelog.Debug("test")
+			if uid, err := c.Request.Cookie("UID"); err != nil {
+				beelog.Debug(err)
 				c.AbortWithStatus(401)
 			} else {
 				log.Println(uid)

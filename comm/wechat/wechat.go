@@ -26,7 +26,7 @@ func init_service() {
 	}
 	wxServer.WxAppId = "wxa2b17d163cc88e9d"
 	wxServer.WxAppSerect = "30d51b4a18121cc0a7f27b5a8f03d588"
-	wxServer.Oauth2RedirectURI = "http://weiapi.journeyui.com/api/wechat/callback"
+	wxServer.Oauth2RedirectURI = "http://testing.foxhelper.cn/api/wechat/callback"
 	wxServer.Oauth2Scope = "snsapi_userinfo"
 }
 

@@ -33,11 +33,8 @@ func ListTestQuestion(c *gin.Context) {
 		return
 	}
 
-	var questions []*models.CQuestion
+	count, err := providers.TestQuestion.Count("", "1", models.CourseMap[courseid], testid)
 
-	_, err := providers.TestQuestion.GetMore(&questions, "", "1", models.CourseMap[courseid], testid, (start-1)*length, length)
-
-	//count, err := providers.TestQuestion.Count(question, this.GetString("query_key"), this.GetString("question_status"), models.CourseMap[this.GetString("course_id")], this.GetString("test_id"))
 	if err != nil {
 		log.Println(err.Error())
 		c.JSON(200, gin.H{
@@ -49,7 +46,15 @@ func ListTestQuestion(c *gin.Context) {
 		return
 	}
 
-	count, err := providers.TestQuestion.Count("", "1", models.CourseMap[courseid], testid)
+	var questions []*models.CQuestion
+
+	if count == 0 {
+		length = 50
+		count = 50
+		_, err = providers.TestQuestion.GetRandom(&questions, models.CourseMap[courseid], models.CourseCollectMap[courseid], testid, length)
+	} else {
+		_, err = providers.TestQuestion.GetMore(&questions, "", "1", models.CourseMap[courseid], models.CourseCollectMap[courseid], testid, (start-1)*length, length)
+	}
 
 	if err != nil {
 		log.Println(err.Error())
