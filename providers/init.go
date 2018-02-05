@@ -4,6 +4,7 @@ var (
 	//Account Account Provider
 	Account  IAccountProvider
 	Wx       IWxProvider
+	WxPay    IWxpayProvider
 	Question IQuestionProvider
 	Test     ITestProvider
 
@@ -37,6 +38,7 @@ func init() {
 	CollectQuestion = &CollectQuestionProvider{}
 
 	Wx = &WxProvider{}
+	WxPay = &WxPayProvider{}
 
 	println("初始化providers")
 }

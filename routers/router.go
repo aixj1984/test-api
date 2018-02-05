@@ -17,11 +17,20 @@ import (
 func CORSMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
-		log.Println(c.GetHeader("Origin"))
+		beelog.Debug(c.GetHeader("Origin"))
+		//		origin := c.GetHeader("Origin")
+		//		if origin != "" {
+		//			c.Header("Access-Control-Allow-Origin", "*")
+		//			c.Header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE, UPDATE")
+		//			c.Header("Access-Control-Allow-Headers", "Origin, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization,Set-Cookie")
+		//			c.Header("Access-Control-Expose-Headers", "Content-Length")
+		//			c.Header("Access-Control-Allow-Credentials", "true")
+		//		}
+		//		beelog.Debug(c.Writer.Header())
 		c.Writer.Header().Set("Access-Control-Allow-Origin", c.GetHeader("Origin"))
 		c.Writer.Header().Set("Access-Control-Max-Age", "86400")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE, UPDATE")
-		c.Writer.Header().Set("Access-Control-Allow-Headers", "Origin, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Origin, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization,Set-Cookie")
 		c.Writer.Header().Set("Access-Control-Expose-Headers", "Content-Length")
 		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
 
@@ -36,8 +45,9 @@ func CORSMiddleware() gin.HandlerFunc {
 
 func Check() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if strings.Contains(c.Request.RequestURI, "api") && c.Request.RequestURI != "/api/wechat/login" && c.Request.RequestURI != "/api/wechat/callback" {
-			//			beelog.Debug("test")
+		beelog.Debug(c.Request.Header)
+		if strings.Contains(c.Request.RequestURI, "api") && c.Request.URL.Path != "/api/wechat/login" && c.Request.URL.Path != "/api/wechat/callback" && c.Request.URL.Path != "/api/test" {
+			beelog.Debug(c.Request.Cookie("UID"))
 			if uid, err := c.Request.Cookie("UID"); err != nil {
 				beelog.Debug(err)
 				c.AbortWithStatus(401)
@@ -53,11 +63,12 @@ func init() {
 	router := gin.Default()
 
 	router.Use(CORSMiddleware())
-	//router.Use(Check())
+	router.Use(Check())
 
 	// Simple group: api
 	api := router.Group("/api")
 	{
+		api.GET("/test", wechat.Test)
 		api.POST("/course/list", controllers.Test)
 
 		api.GET("/course/list", course.ListCourse)
@@ -82,6 +93,8 @@ func init() {
 
 		api.GET("/wechat/login", wechat.Login)
 		api.GET("/wechat/callback", wechat.CallBack)
+		api.POST("/wechat/pay", wechat.Pay)
+		api.POST("/wechat/pay/callback", wechat.PayCallback)
 
 	}
 

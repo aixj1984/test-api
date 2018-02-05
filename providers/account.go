@@ -7,13 +7,14 @@ import (
 
 	"github.com/astaxie/beego/orm"
 
-	//"errors"
+	"errors"
 )
 
 //IAccountProvider account provider interface
 type IAccountProvider interface {
 	GetOne(interface{}) error
 	InsertOne(interface{}) (int64, error)
+	GetOneByCondition(interface{}, string, interface{}) error
 }
 
 //AccountProvider account provider
@@ -21,18 +22,35 @@ type AccountProvider struct {
 }
 
 //Get 获取account
+func (p *AccountProvider) GetOneByCondition(m interface{}, fileld string, value interface{}) error {
+	o := orm.NewOrm()
+
+	err := o.QueryTable("account").Filter(fileld, value).One(m)
+	if err == orm.ErrMultiRows {
+		// 多条的时候报错
+		return errors.New("find more not one")
+	}
+	if err == orm.ErrNoRows {
+		// 没有找到记录
+		return errors.New("not exist")
+	}
+
+	return err
+}
+
+//Get 获取account
 func (p *AccountProvider) GetOne(m interface{}) error {
 	o := orm.NewOrm()
-	/*
-		err := o.QueryTable("account").Filter("id", 1).One(m)
-		if err == orm.ErrMultiRows {
-			// 多条的时候报错
-			return errors.New("test")
-		}
-		if err == orm.ErrNoRows {
-			// 没有找到记录
-			return errors.New("test111")
-		}*/
+
+	//	err := o.QueryTable("account").Filter("id", 1).One(m)
+	//	if err == orm.ErrMultiRows {
+	//		// 多条的时候报错
+	//		return errors.New("test")
+	//	}
+	//	if err == orm.ErrNoRows {
+	//		// 没有找到记录
+	//		return errors.New("test111")
+	//	}
 	err := o.Read(m)
 
 	return err
