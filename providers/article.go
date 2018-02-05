@@ -15,6 +15,7 @@ type IArticleProvider interface {
 	GetOne(m interface{}) error
 	InsertOne(m interface{}) (int64, error)
 	UpdateOne(m *models.Article) (int64, error)
+	UpdateReader(id int) (int64, error)
 	UpdateOneStatus(status, id int) (int64, error)
 	GetMore(array interface{}, query_key, status string, start, length int) (int64, error)
 	Count(query_key, status string) (int64, error)
@@ -45,6 +46,18 @@ func (p *ArticleProvider) UpdateOne(m *models.Article) (int64, error) {
 
 	res, err := o.Raw("update  article set title = ?, content = ? ,source = ? ,abstract = ? where id = ? ",
 		m.Title, m.Content, m.Source, m.Abstract, m.Id).Exec()
+	if err == nil {
+		num, _ := res.RowsAffected()
+		fmt.Println("mysql row affected nums: ", num)
+		return num, nil
+	}
+	return 0, err
+}
+
+func (p *ArticleProvider) UpdateReader(id int) (int64, error) {
+	o := orm.NewOrm()
+
+	res, err := o.Raw("update  article set read_count = read_count+1 where id = ? ", id).Exec()
 	if err == nil {
 		num, _ := res.RowsAffected()
 		fmt.Println("mysql row affected nums: ", num)
@@ -87,6 +100,7 @@ func (p *ArticleProvider) GetMore(array interface{}, query_key, status string, s
 	qb.Select("*").
 		From("article").
 		Where(condition).
+		OrderBy("-id").
 		Limit(length).Offset(start)
 
 	// 构建查询对象

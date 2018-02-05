@@ -63,7 +63,7 @@ func init() {
 	router := gin.Default()
 
 	router.Use(CORSMiddleware())
-	router.Use(Check())
+	//router.Use(Check())
 
 	// Simple group: api
 	api := router.Group("/api")

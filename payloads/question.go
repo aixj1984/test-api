@@ -24,4 +24,5 @@ type InsertQuestion struct {
 type SaveQuestionCollect struct {
 	CourseId   int `validate:"required"`
 	QuestionId int `validate:"required"`
+	CustomerId int `validate:"required"`
 }

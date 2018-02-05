@@ -12,9 +12,10 @@ import (
 type ITestQuestionProvider interface {
 	GetOne(interface{}, ...string) error
 	InsertOne(m interface{}) (int64, error)
-	GetMore(array interface{}, query_key, status string, question_tablename, test_id string, start, length int) (int64, error)
+	GetMore(array interface{}, query_key, status string, question_tablename, collection_tablename, test_id string, start, length int) (int64, error)
 	UpdateOne(m interface{}, cols ...string) (int64, error)
 	Count(query_key, status string, question_tablename, test_id string) (int64, error)
+	GetRandom(array interface{}, question_tablename, collection_tablename, test_id string, length int) (int64, error)
 	DeleteOne(m interface{}) (int64, error)
 }
 
@@ -53,7 +54,7 @@ func (p *TestQuestionProvider) DeleteOne(m interface{}) (int64, error) {
 	return effact, err
 }
 
-func (p *TestQuestionProvider) GetMore(array interface{}, query_key, status string, question_tablename, test_id string, start, length int) (int64, error) {
+func (p *TestQuestionProvider) GetMore(array interface{}, query_key, status string, question_tablename, collection_tablename, test_id string, start, length int) (int64, error) {
 
 	qb, _ := orm.NewQueryBuilder("mysql")
 
@@ -102,7 +103,7 @@ func (p *TestQuestionProvider) GetMore(array interface{}, query_key, status stri
 			"IFNULL(temp_a.collect_question_id, 0) as is_collect").
 			From(question_tablename).
 			InnerJoin("(select * from course_test_question where test_id = ? ) as test_question").On(question_tablename + ".id = test_question.question_id").
-			LeftJoin("(select distinct(question_id) as collect_question_id from collect_question_1 ) as temp_a").On(question_tablename + ".id = temp_a.collect_question_id").
+			LeftJoin("(select distinct(question_id) as collect_question_id from " + collection_tablename + " ) as temp_a").On(question_tablename + ".id = temp_a.collect_question_id").
 			Where(condition).
 			Limit(length).Offset(start)
 	}
@@ -118,6 +119,40 @@ func (p *TestQuestionProvider) GetMore(array interface{}, query_key, status stri
 	o := orm.NewOrm()
 
 	effact, err := o.Raw(sql, test_id).QueryRows(array)
+	return effact, err
+
+}
+
+func (p *TestQuestionProvider) GetRandom(array interface{}, question_tablename, collection_tablename, test_id string, length int) (int64, error) {
+
+	qb, _ := orm.NewQueryBuilder("mysql")
+
+	var condition = "status = 1 and id >= ((SELECT MAX(id) FROM " + question_tablename + ")-(SELECT MIN(id) FROM " + question_tablename + ")) * RAND() + (SELECT MIN(id) FROM " + question_tablename + ")"
+
+	qb.Select("title",
+		question_tablename+".id",
+		"question_type",
+		"options",
+		"answer",
+		"note",
+		"status",
+		"IFNULL(temp_a.collect_question_id, 0) as is_collect").
+		From(question_tablename).
+		LeftJoin("(select distinct(question_id) as collect_question_id from " + collection_tablename + " ) as temp_a").On(question_tablename + ".id = temp_a.collect_question_id").
+		Where(condition).
+		Limit(length)
+
+	// 构建查询对象
+
+	// 导出 SQL 语句
+	sql := qb.String()
+
+	fmt.Println(sql)
+
+	// 执行 SQL 语句
+	o := orm.NewOrm()
+
+	effact, err := o.Raw(sql).QueryRows(array)
 	return effact, err
 
 }
