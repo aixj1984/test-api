@@ -127,7 +127,7 @@ func (p *TestQuestionProvider) GetRandom(array interface{}, question_tablename, 
 
 	qb, _ := orm.NewQueryBuilder("mysql")
 
-	var condition = "status = 1"
+	var condition = "status = 1 and id >= ((SELECT MAX(id) FROM " + question_tablename + ")-(SELECT MIN(id) FROM " + question_tablename + ")) * RAND() + (SELECT MIN(id) FROM " + question_tablename + ")"
 
 	qb.Select("title",
 		question_tablename+".id",
@@ -152,7 +152,7 @@ func (p *TestQuestionProvider) GetRandom(array interface{}, question_tablename, 
 	// 执行 SQL 语句
 	o := orm.NewOrm()
 
-	effact, err := o.Raw(sql, test_id).QueryRows(array)
+	effact, err := o.Raw(sql).QueryRows(array)
 	return effact, err
 
 }

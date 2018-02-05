@@ -134,7 +134,7 @@ func SaveCollectQuestion(c *gin.Context) {
 	var payload payloads.SaveQuestionCollect
 	if c.ShouldBind(&payload) == nil {
 		var collect_question = models.CollectQuestion{}
-		collect_question.CustomerId = 1
+		collect_question.CustomerId = payload.CustomerId
 		collect_question.AddTime = time.Now().Format("2006-01-02 15:04:05")
 		collect_question.QuestionId = payload.QuestionId
 
@@ -165,7 +165,7 @@ func DelCollectQuestion(c *gin.Context) {
 	var payload payloads.SaveQuestionCollect
 	if c.ShouldBind(&payload) == nil {
 
-		_, err := providers.CollectQuestion.DeleteOne(payload.QuestionId, 1, models.CourseCollectMap[strconv.Itoa(payload.CourseId)])
+		_, err := providers.CollectQuestion.DeleteOne(payload.QuestionId, payload.CustomerId, models.CourseCollectMap[strconv.Itoa(payload.CourseId)])
 		if err != nil {
 
 			c.JSON(200, gin.H{

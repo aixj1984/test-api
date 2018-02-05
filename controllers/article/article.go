@@ -73,6 +73,8 @@ func GetArticleDetail(c *gin.Context) {
 		return
 	}
 
+	providers.Article.UpdateReader(articleid)
+
 	c.JSON(200, gin.H{
 		"code": 0,
 		"msg":  "",
