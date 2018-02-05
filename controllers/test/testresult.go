@@ -22,9 +22,20 @@ func ListTestResult(c *gin.Context) {
 
 	var test_results []*models.TestResultDetail
 
-	var customer_id = 1
+	uid, err := c.Request.Cookie("UID")
 
-	_, err := providers.TestResult.GetMore(&test_results, customer_id, (start-1)*length, length)
+	if err != nil {
+		c.AbortWithStatus(401)
+		return
+	}
+
+	customer_id, err := strconv.Atoi(uid.Value)
+	if err != nil {
+		c.AbortWithStatus(401)
+		return
+	}
+
+	_, err = providers.TestResult.GetMore(&test_results, customer_id, (start-1)*length, length)
 	if err != nil {
 		log.Println(err.Error())
 		c.JSON(200, gin.H{
@@ -59,11 +70,25 @@ func ListTestResult(c *gin.Context) {
 }
 
 func SaveTestResult(c *gin.Context) {
+
+	uid, err := c.Request.Cookie("UID")
+
+	if err != nil {
+		c.AbortWithStatus(401)
+		return
+	}
+
+	customer_id, err := strconv.Atoi(uid.Value)
+	if err != nil {
+		c.AbortWithStatus(401)
+		return
+	}
+
 	var payload payloads.SaveTestResult
 	if c.ShouldBind(&payload) == nil {
 
 		var test_reslt = models.TestResult{}
-		test_reslt.CustomerId = 1
+		test_reslt.CustomerId = customer_id
 		test_reslt.AddTime = time.Now().Format("2006-01-02 15:04:05")
 		test_reslt.TestSec = payload.TestSec
 		test_reslt.CourseId = payload.CourseId
