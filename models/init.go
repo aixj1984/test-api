@@ -16,7 +16,7 @@ func init() {
 
 	orm.RegisterDataBase("default", "mysql", "root:rootroot@tcp(111.230.221.146:3310)/neihe_test?charset=utf8")
 
-	orm.RegisterModel(new(Account), new(WxUserinfo),
+	orm.RegisterModel(new(Account), new(WxUserinfo), new(Order), new(OrderCourse),
 		new(Question1), new(Question2), new(Question3),
 		new(Question4), new(Question5), new(Question6),
 		new(Question7), new(Question8), new(Question9),

@@ -7,7 +7,7 @@ import (
 
 //Account account model
 type Account struct {
-	Id          int
+	Id          int    `orm:"pk"`
 	ImToken     string `orm:"column(imtoken);size(128)"`
 	CountryCode string `orm:"column(countrycode);size(20)",json:"countrycode"`
 	PhoneNo     string `orm:"column(phoneno);size(20)"`
