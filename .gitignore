@@ -1,0 +1,5 @@
+logs/
+test-api
+test-api.exe
+logs/*.*
+nohup.out

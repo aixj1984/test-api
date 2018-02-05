@@ -45,7 +45,7 @@ func (p *TestProvider) GetMore(array interface{}, object interface{}, course_id,
 	o := orm.NewOrm()
 	// LIMIT 10 OFFSET 20 注意跟 SQL 反过来的
 
-	effact, err := o.QueryTable(object).Filter("status", 1).Filter("course_id", course_id).Filter("test_type", test_type).Limit(length, start).All(array)
+	effact, err := o.QueryTable(object).Filter("status", 1).Filter("course_id", course_id).Filter("test_type", test_type).OrderBy("-id").Limit(length, start).All(array)
 
 	return effact, err
 }
