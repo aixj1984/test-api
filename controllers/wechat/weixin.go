@@ -143,10 +143,10 @@ func Pay(c *gin.Context) {
 
 }
 func PayCallback(c *gin.Context) {
-	var response map[string]interface{}
-	c.Bind(&response)
-	beelog.Debug(response)
-	paycallback(response["prepayId"].(string))
+	//	var response map[string]interface{}
+	//	c.Bind(&response)
+	//	beelog.Debug(response)
+	//	paycallback(response["prepayId"].(string))
 	c.XML(200, gin.H{
 		"return_code": "<![CDATA[SUCCESS]]>",
 		"return_msg":  "<![CDATA[OK]]>",
