@@ -96,7 +96,6 @@ func ListCollectQuestion(c *gin.Context) {
 
 	_, err := providers.CollectQuestion.GetMore(&questions, models.CourseMap[courseid], models.CourseCollectMap[courseid], 1, (start-1)*length, length)
 
-	//count, err := providers.TestQuestion.Count(question, this.GetString("query_key"), this.GetString("question_status"), models.CourseMap[this.GetString("course_id")], this.GetString("test_id"))
 	if err != nil {
 		log.Println(err.Error())
 		c.JSON(200, gin.H{
@@ -131,10 +130,24 @@ func ListCollectQuestion(c *gin.Context) {
 }
 
 func SaveCollectQuestion(c *gin.Context) {
+
+	uid, err := c.Request.Cookie("UID")
+
+	if err != nil {
+		c.AbortWithStatus(401)
+		return
+	}
+
+	iUid, err := strconv.Atoi(uid.Value)
+	if err != nil {
+		c.AbortWithStatus(401)
+		return
+	}
+
 	var payload payloads.SaveQuestionCollect
 	if c.ShouldBind(&payload) == nil {
 		var collect_question = models.CollectQuestion{}
-		collect_question.CustomerId = payload.CustomerId
+		collect_question.CustomerId = iUid
 		collect_question.AddTime = time.Now().Format("2006-01-02 15:04:05")
 		collect_question.QuestionId = payload.QuestionId
 
@@ -162,10 +175,23 @@ func SaveCollectQuestion(c *gin.Context) {
 }
 
 func DelCollectQuestion(c *gin.Context) {
+	uid, err := c.Request.Cookie("UID")
+
+	if err != nil {
+		c.AbortWithStatus(401)
+		return
+	}
+
+	iUid, err := strconv.Atoi(uid.Value)
+	if err != nil {
+		c.AbortWithStatus(401)
+		return
+	}
+
 	var payload payloads.SaveQuestionCollect
 	if c.ShouldBind(&payload) == nil {
 
-		_, err := providers.CollectQuestion.DeleteOne(payload.QuestionId, payload.CustomerId, models.CourseCollectMap[strconv.Itoa(payload.CourseId)])
+		_, err := providers.CollectQuestion.DeleteOne(payload.QuestionId, iUid, models.CourseCollectMap[strconv.Itoa(payload.CourseId)])
 		if err != nil {
 
 			c.JSON(200, gin.H{

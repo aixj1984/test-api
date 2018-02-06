@@ -18,15 +18,6 @@ func CORSMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		beelog.Debug(c.GetHeader("Origin"))
-		//		origin := c.GetHeader("Origin")
-		//		if origin != "" {
-		//			c.Header("Access-Control-Allow-Origin", "*")
-		//			c.Header("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE, UPDATE")
-		//			c.Header("Access-Control-Allow-Headers", "Origin, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization,Set-Cookie")
-		//			c.Header("Access-Control-Expose-Headers", "Content-Length")
-		//			c.Header("Access-Control-Allow-Credentials", "true")
-		//		}
-		//		beelog.Debug(c.Writer.Header())
 		c.Writer.Header().Set("Access-Control-Allow-Origin", c.GetHeader("Origin"))
 		c.Writer.Header().Set("Access-Control-Max-Age", "86400")
 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE, UPDATE")

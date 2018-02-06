@@ -18,7 +18,21 @@ func ListCourse(c *gin.Context) {
 
 	start, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	length, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
-	customer_id, _ := strconv.Atoi(c.DefaultQuery("customerid", "0"))
+
+	uid, err := c.Request.Cookie("UID")
+
+	if err != nil {
+		c.AbortWithStatus(401)
+		return
+	}
+
+	customer_id, err := strconv.Atoi(uid.Value)
+	if err != nil {
+		c.AbortWithStatus(401)
+		return
+	}
+
+	//customer_id, _ := strconv.Atoi(c.DefaultQuery("customerid", "0"))
 
 	if customer_id == 0 {
 		c.JSON(200, gin.H{
@@ -34,7 +48,7 @@ func ListCourse(c *gin.Context) {
 
 	var courses []*models.CustomerCourseDetail
 
-	_, err := providers.CustomerCourse.GetMore(&courses, customer_id, (start-1)*length, length)
+	_, err = providers.CustomerCourse.GetMore(&courses, customer_id, (start-1)*length, length)
 	if err != nil {
 		log.Println(err.Error())
 		c.JSON(200, gin.H{
@@ -106,10 +120,22 @@ func ListAllCourse(c *gin.Context) {
 
 func CustomerDefaultCourse(c *gin.Context) {
 
+	uid, err := c.Request.Cookie("UID")
+
+	if err != nil {
+		c.AbortWithStatus(401)
+		return
+	}
+
+	iUid, err := strconv.Atoi(uid.Value)
+	if err != nil {
+		c.AbortWithStatus(401)
+		return
+	}
+
 	var payload payloads.SaveCustomerCoursesSetting
 	if c.ShouldBind(&payload) == nil {
-
-		_, err := providers.CustomerCourse.UpdataDefault(payload.CustomerId, payload.DefalutCourses)
+		_, err := providers.CustomerCourse.UpdataDefault(iUid, payload.DefalutCourses)
 		if err != nil {
 			c.JSON(200, gin.H{
 				"code": 101,
