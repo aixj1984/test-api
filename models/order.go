@@ -14,7 +14,7 @@ type Order struct {
 	PrepayId      string    `orm:"column(prepay_id);size(100);unique"`
 	Bank          string    `orm:"column(bank);size(16);null"`
 	TransactionId string    `orm:"column(transaction_id);size(100);null"`
-	Status        int       `orm:"column(status)"`
+	Status        int       `orm:"column(status);default(0)"`
 	Name          string    `orm:"column(name);size(128);null"`
 	PayErrMsg     string    `orm:"column(pay_err_msg);size(256);null"`
 	TradeType     string    `orm:"column(trade_type);size(16)"`

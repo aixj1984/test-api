@@ -1,6 +1,8 @@
 package wechat
 
 import (
+	"encoding/xml"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 	"strings"
@@ -97,7 +99,7 @@ func Pay(c *gin.Context) {
 		//			})
 		//			return
 		//		}
-
+		beelog.Debug(total_mount)
 		var wx_order models.Order
 		wx_order.OrderNo = utils.GetOrderNo()
 		for i := 0; i < len(course_id_array); i++ {
@@ -111,12 +113,12 @@ func Pay(c *gin.Context) {
 		//		wx_order.Uid = uid
 		wx_order.ClientIp = clientIP
 		wx_order.FeeType = "CNY"
-		wx_order.TotalFee = 100
+		wx_order.TotalFee = 1
 		wx_order.OpenId = account.OpenID
 		wx_order.Name = "test"
 		wx_order.TradeType = "JSAPI"
 		service := wechat.GetwxPayService()
-		if ret, err := service.UnifiedOrder(total_mount, wx_order.Name, wx_order.ClientIp, wx_order.OpenId, wx_order.FeeType, wx_order.TradeType, service.NotifyUrl, wx_order.OrderNo); err != nil {
+		if ret, err := service.UnifiedOrder(wx_order.TotalFee, wx_order.Name, wx_order.ClientIp, wx_order.OpenId, wx_order.FeeType, wx_order.TradeType, service.NotifyUrl, wx_order.OrderNo); err != nil {
 			c.JSON(200, gin.H{
 				"code": 1002,
 				"msg":  err.Error(),
@@ -143,18 +145,25 @@ func Pay(c *gin.Context) {
 
 }
 func PayCallback(c *gin.Context) {
+	var resp wechat.WxResponse
+	defer c.Request.Body.Close()
+	con, _ := ioutil.ReadAll(c.Request.Body) //获取post的数据
+	beelog.Debug(string(con))
+	xml.Unmarshal(con, &resp)
 	//	var response map[string]interface{}
 	//	c.Bind(&response)
-	//	beelog.Debug(response)
-	//	paycallback(response["prepayId"].(string))
-	c.XML(200, gin.H{
-		"return_code": "<![CDATA[SUCCESS]]>",
-		"return_msg":  "<![CDATA[OK]]>",
-	})
+	beelog.Debug(resp)
+	paycallback(resp)
+
+	response := `<xml> 
+  	<return_code><![CDATA[SUCCESS]]></return_code>
+  	<return_msg><![CDATA[OK]]></return_msg>
+	</xml>`
+	c.Writer.WriteString(response)
 	return
 }
 
-func paycallback(prepayId string) {
+func paycallback(wx_response wechat.WxResponse) {
 	var wx_order models.Order
 	var account models.Account
 	//	account.Id, _ = strconv.Atoi(uid)
@@ -162,7 +171,20 @@ func paycallback(prepayId string) {
 	//		beelog.Error(err)
 	//		return
 	//	}
-	if err := providers.WxPay.GetOneByCondition(&wx_order, "prepayId", prepayId); err != nil {
+	if err := providers.WxPay.GetOneByCondition(&wx_order, "order_no", wx_response.OutTradeNo); err == nil {
+		if wx_response.ResultCode != "SUCCESS" {
+			beelog.Debug("pay failed")
+			wx_order.Status = 2
+			wx_order.TransactionId = wx_response.TransactionId
+			wx_order.PayTime = time.Now()
+			providers.WxPay.UpdateOne(&wx_order, "status", "transaction_id", "pay_tiem")
+			return
+		} else {
+			wx_order.Status = 1
+			wx_order.TransactionId = wx_response.TransactionId
+			wx_order.PayTime = time.Now()
+			providers.WxPay.UpdateOne(&wx_order, "status", "transaction_id", "pay_tiem")
+		}
 		if err := providers.Account.GetOneByCondition(&account, "openid", wx_order.OpenId); err != nil {
 			beelog.Error(err)
 			return
@@ -173,6 +195,7 @@ func paycallback(prepayId string) {
 				var customer_course models.CustomerCourse
 				customer_course.CourseId = order_course[i].CourseId
 				customer_course.CustomerId = account.Id
+				customer_course.IsDisplay = 1
 				if _, err := providers.CustomerCourse.InsertOne(&customer_course); err != nil {
 					beelog.Error(err)
 				}
@@ -180,6 +203,8 @@ func paycallback(prepayId string) {
 		} else {
 			beelog.Error(err1)
 		}
+	} else {
+		beelog.Error(err)
 	}
 }
 
