@@ -3,4 +3,4 @@ test-api
 test-api.exe
 logs/*.*
 nohup.out
-conf/*.*
+conf/app.conf
