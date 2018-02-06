@@ -11,6 +11,8 @@ import (
 	"test-api/controllers/test"
 	"test-api/controllers/wechat"
 
+	"github.com/astaxie/beego"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -37,7 +39,7 @@ func CORSMiddleware() gin.HandlerFunc {
 func Check() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		beelog.Debug(c.Request.Header)
-		if strings.Contains(c.Request.RequestURI, "api") && c.Request.URL.Path != "/api/wechat/login" && c.Request.URL.Path != "/api/wechat/callback" && c.Request.URL.Path != "/api/test" && c.Request.URL.Path != "/api/wechat/pay/callback" {
+		if strings.Contains(c.Request.RequestURI, "api") && c.Request.URL.Path != "/api/wechat/login" && c.Request.URL.Path != "/api/wechat/callback" && c.Request.URL.Path != "/api/test" {
 			beelog.Debug(c.Request.Cookie("UID"))
 			if uid, err := c.Request.Cookie("UID"); err != nil {
 				beelog.Debug(err)
@@ -90,10 +92,9 @@ func init() {
 	}
 
 	router.Static("/static", "./static")
-	//router.StaticFile("/favicon.ico", "./static/favicon.ico")
 
 	router.StaticFile("/", "./views/index.html")
 
-	router.Run(":8000")
+	router.Run(":" + beego.AppConfig.String("httpport"))
 
 }
