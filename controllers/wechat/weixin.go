@@ -83,7 +83,7 @@ func Pay(c *gin.Context) {
 			var customer_course models.CustomerCourse
 			customer_course.CourseId = course_id
 			customer_course.CustomerId = account.Id
-			if _, err := providers.CustomerCourse.GetOne(&customer_course, "customer_id", "course_id"); err != nil {
+			if err := providers.CustomerCourse.GetOne(&customer_course, "customer_id", "course_id"); err != nil {
 				beelog.Error(err)
 			}
 			course_id_array = append(course_id_array, course_id)
