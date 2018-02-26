@@ -76,7 +76,7 @@ func (p *CustomerCourseProvider) GetMore(array interface{}, customer_id int, sta
 	var condition = "course.status = 1"
 
 	qb.Select("course.id", "name", "price", "is_display",
-		"IFNULL(temp_a.id, 0) as status").
+		"IFNULL(temp_a.course_id, 0) as status").
 		From("course").
 		LeftJoin("(select * from customer_course where customer_id = ? ) as temp_a").On("course.id = temp_a.course_id").
 		Where(condition).
@@ -102,7 +102,7 @@ func (p *CustomerCourseProvider) GetAll(array interface{}, customer_id int) (int
 	var condition = "course.status = 1"
 
 	qb.Select("course.id", "name", "price",
-		"IFNULL(temp_a.id, 0) as status").
+		"IFNULL(temp_a.course_id, 0) as status").
 		From("course").
 		LeftJoin("(select id, course_id from customer_course where customer_id = ? ) as temp_a").On("course.id = temp_a.course_id").
 		Where(condition)
